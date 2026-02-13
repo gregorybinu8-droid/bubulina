@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Bubu & Dudu · Valentine</title>
+  <!-- Google Fonts: Fredoka headings, Nunito body -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- lightweight confetti lib -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+  <style>
+    /* ---------- PASTEL RESET / VARIABLES ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --pastel-pink: #ffd9e6;
+      --pastel-lavender: #e0d4ff;
+      --pastel-cream: #fff2df;
+      --pastel-yellow: #fff9d7;
+      --warm-yellow: #ffe5b4;
+      --blush: #ffb7c5;
+      --dudu-blue: #b5d0eb;
+      --bubu-green: #c1e1c1;
+      --shadow-soft: 0 10px 20px rgba(0,0,0,0.03), 0 6px 6px rgba(0,0,0,0.05);
+      --border-radius-card: 24px;
+      --border-radius-btn: 40px;
+      --transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(145deg, #ffe9f2 0%, #fde2f1 40%, #fbe4f0 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      position: relative;
+      color: #5a4e4e;
+    }
+
+    /* animated floating hearts + sparkles (lightweight) */
+    .heart-bg, .sparkle-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 22px;
+      opacity: 0.5;
+      animation: float 10s infinite ease-in-out;
+      color: #ffa5b0;
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 16px;
+      opacity: 0.4;
+      animation: sparkleFloat 12s infinite alternate;
+      color: #ffe69b;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0.2; }
+      100% { transform: translateY(-20vh) scale(1.2); opacity: 0.5; }
+    }
+    @keyframes sparkleFloat {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 0.2; }
+      100% { transform: translate(30px, -60px) rotate(20deg); opacity: 0.5; }
+    }
+
+    /* main container — card / screen style */
+    .screen {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(255, 250, 240, 0.7);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: var(--border-radius-card);
+      box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.8);
+      padding: 32px 24px;
+      margin: 16px auto;
+      position: relative;
+      z-index: 10;
+      border: 1px solid rgba(255, 220, 240, 0.6);
+      transition: var(--transition);
+    }
+
+    h1, h2, h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #4d3e3e;
+    }
+
+    h1 { font-size: 2.1rem; line-height: 1.2; }
+    h2 { font-size: 1.8rem; }
+    h3 { font-size: 1.5rem; }
+
+    .sub {
+      font-size: 1.2rem;
+      margin-top: 8px;
+      color: #7a6363;
+    }
+
+    .btn, button {
+      background: white;
+      border: none;
+      border-radius: var(--border-radius-btn);
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: 'Nunito', sans-serif;
+      color: #5a4e4e;
+      box-shadow: 0 6px 0 #f8c3cd, 0 8px 16px rgba(255, 150, 180, 0.2);
+      transition: all 0.1s ease;
+      cursor: pointer;
+      border: 1px solid white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #fffefc;
+    }
+
+    .btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #f8a5b3, 0 8px 12px rgba(255, 150, 180, 0.2);
+    }
+
+    .btn-primary {
+      background: #ffccd9;
+      color: #573e3e;
+      border: 1px solid #ffe7ed;
+      box-shadow: 0 6px 0 #e6a0b5;
+    }
+
+    .btn-secondary {
+      background: #f8f0e7;
+      box-shadow: 0 4px 0 #e6cfb5;
+    }
+
+    /* story cards */
+    .story-card {
+      background: rgba(255, 250, 250, 0.9);
+      border-radius: 20px;
+      padding: 24px 18px;
+      margin-bottom: 24px;
+      border: 2px dashed #ffb7c5;
+      position: relative;
+    }
+
+    .icon-placeholder {
+      font-size: 44px;
+      margin-bottom: 12px;
+      background: #ffecec;
+      width: fit-content;
+      padding: 12px;
+      border-radius: 50%;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    /* question screen special buttons */
+    .question-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .question-btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.2rem;
+    }
+
+    /* dodging button style */
+    .dodging {
+      position: relative;
+      transition: left 0.2s ease, top 0.2s ease;
+    }
+
+    /* speech bubble */
+    .speech-bubble {
+      background: white;
+      border-radius: 32px 32px 32px 8px;
+      padding: 14px 22px;
+      margin: 12px 0;
+      border: 2px solid #ffc1cc;
+      color: #6e5f5f;
+      font-weight: 600;
+      display: inline-block;
+      font-size: 1.1rem;
+    }
+
+    /* couple photo styles */
+    .photo-frame {
+      background: white;
+      border-radius: 40px;
+      padding: 20px;
+      margin: 24px 0;
+      border: 4px solid #ffb7c5;
+      box-shadow: 0 12px 0 #f8c3cd, 0 20px 30px rgba(255, 150, 180, 0.15);
+      transform: rotate(1deg);
+    }
+    
+    .couple-photo {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 24px;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .photo-caption {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #b95b7a;
+      margin-top: 20px;
+      font-family: 'Fredoka', sans-serif;
+      text-shadow: 2px 2px 0 #ffe2e9;
+      background: rgba(255, 240, 245, 0.8);
+      padding: 16px 20px;
+      border-radius: 60px;
+      display: inline-block;
+    }
+    
+    .heart-decoration {
+      font-size: 2rem;
+      animation: pulse 1.5s infinite;
+      display: inline-block;
+      margin: 0 8px;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* character image styles */
+    .character-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .character-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffdbdb;
+      border: 5px solid white;
+      overflow: hidden;
+    }
+    
+    .character-circle-blue {
+      background: #d4e0ff;
+    }
+
+    /* music toggle */
+    .music-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 250, 250, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 12px 18px;
+      border-radius: 60px;
+      box-shadow: var(--shadow-soft);
+      z-index: 100;
+      font-weight: 600;
+      border: 1px solid white;
+      color: #664e4e;
+    }
+
+    /* hidden class */
+    .hidden {
+      display: none !important;
+    }
+
+    /* responsive */
+    @media (prefers-reduced-motion) {
+      .heart, .sparkle, .btn, .dodging, * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- FLOATING HEARTS + SPARKLES (light bg) -->
+  <div class="heart-bg" id="heartBg"></div>
+  <div class="sparkle-bg" id="sparkleBg"></div>
+
+  <!-- MUSIC TOGGLE (off by default) -->
+  <div class="music-toggle" id="musicToggle">
+    🔈 Music: <span id="musicState">Off</span>
+  </div>
+
+  <!-- SCREEN 1: LANDING -->
+  <div id="screen1" class="screen">
+    <h1>Hey Ponnu Kutty 🧸💗</h1>
+    <p class="sub" style="font-size:1.5rem; margin-top:20px;">Bubu, tap this… I made something for you</p>
+    <div style="margin-top:36px; text-align:center;">
+      <button id="surpriseBtn" class="btn btn-primary" style="font-size:1.5rem; padding:20px 32px;">Tap for a surprise ✨</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: STORY CARDS (3 cards, next navigation) -->
+  <div id="screen2" class="screen hidden">
+    <div id="storyCardContainer">
+      <!-- dynamic cards injected via JS -->
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:24px;">
+      <button id="prevStory" class="btn btn-secondary" disabled>Back</button>
+      <button id="nextStory" class="btn btn-primary">Next 💕</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: QUESTION (viral moment) -->
+  <div id="screen3" class="screen hidden">
+    <div style="text-align:center;">
+      <h2 id="questionTitle">Bubu… will you be my Valentine? 💘</h2>
+      
+      <!-- BUBU & DUDU PNG PLACEHOLDERS -->
+      <!-- Replace src paths with your actual image files -->
+      <div style="display:flex; justify-content:center; gap:24px; margin: 28px 0 20px;">
+        <!-- Bubu character (left) -->
+        <div class="character-circle">
+          <img src="images/bubu.png" alt="Bubu" class="character-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23ffdbdb%22/><text x=%2250%22 y=%2265%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22%23b37474%22>🧸</text></svg>';">
+        </div>
+        <!-- Dudu character (right) -->
+        <div class="character-circle character-circle-blue">
+          <img src="images/dudu.png" alt="Dudu" class="character-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23d4e0ff%22/><text x=%2250%22 y=%2265%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22%2357578c%22>🐼</text></svg>';">
+        </div>
+      </div>
+      
+      <p style="font-size:1.2rem; margin-bottom:10px;"><span style="background: #ffe3ed; padding:8px 20px; border-radius:40px;">Bubu + Dudu = 💞</span></p>
+    </div>
+
+    <!-- speech bubble for dodge feedback -->
+    <div id="speechBubbleArea" style="min-height: 70px; margin-top: 8px;"></div>
+
+    <div class="question-buttons" id="questionButtons">
+      <button id="yesBtn" class="btn btn-primary question-btn">Yes, Dudu! 💖</button>
+      <button id="maybeBtn" class="btn btn-secondary question-btn">Maybe later 🫶</button>
+      <div style="position:relative; width:100%;" id="notThisTimeContainer">
+        <button id="notThisTimeBtn" class="btn btn-secondary question-btn dodging">Not this time</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: CELEBRATION - NOW WITH COUPLE PHOTO INSTEAD OF DATE PICKER -->
+  <div id="screen4" class="screen hidden">
+    <div style="text-align:center;">
+      <h1 style="font-size:2.4rem; line-height:1.3;">YAYYYY BUBU SAID YES!! 💘</h1>
+      <p style="font-size:1.7rem; margin:16px 0 8px;">Ponnu Kutty x Kichu Kuttan</p>
+      
+      <!-- COUPLE PHOTO SECTION - REPLACES DATE PICKER -->
+      <div class="photo-frame">
+        <!-- Replace with your actual couple photo -->
+        <img src="images/couple-photo.jpg" alt="Bubu and Dudu" class="couple-photo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22><rect width=%22400%22 height=%22300%22 fill=%22%23ffe2ed%22/><circle cx=%22130%22 cy=%22150%22 r=%2260%22 fill=%22%23ffdbdb%22/><circle cx=%22270%22 cy=%22150%22 r=%2260%22 fill=%22%23d4e0ff%22/><text x=%22130%22 y=%22170%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22%23b37474%22>🧸</text><text x=%22270%22 y=%22170%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22%2357578c%22>🐼</text><text x=%22200%22 y=%22240%22 font-size=%2230%22 text-anchor=%22middle%22 fill=%22%23b95b7a%22>💗</text></svg>';">
+        
+        <!-- Cute caption with personalized name -->
+        <div class="photo-caption">
+          <span class="heart-decoration">💖</span>
+          YAYY I LOVE YOU TOO MY BUBULINA
+          <span class="heart-decoration">💖</span>
+        </div>
+        
+        <!-- Small hearts animation -->
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:16px; font-size:1.8rem;">
+          <span style="animation: pulse 1.2s infinite;">💗</span>
+          <span style="animation: pulse 1.5s infinite; animation-delay:0.2s;">💕</span>
+          <span style="animation: pulse 1.8s infinite; animation-delay:0.4s;">💞</span>
+          <span style="animation: pulse 1.3s infinite; animation-delay:0.1s;">💓</span>
+          <span style="animation: pulse 1.6s infinite; animation-delay:0.3s;">💖</span>
+        </div>
+      </div>
+      
+      <!-- Simple restart button -->
+      <button id="restartFromYesBtn" style="margin-top:30px; background:white; border:2px solid #ffb7c5; border-radius:60px; padding:16px 32px; color:#b95b7a; font-weight:bold; font-size:1.2rem; box-shadow:var(--shadow-soft); cursor:pointer;">💛 Start over</button>
+    </div>
+  </div>
+
+  <!-- SCREEN for "Not this time" exit / restart -->
+  <div id="screenNotThisTime" class="screen hidden">
+    <div style="text-align:center; padding:24px;">
+      <div style="display:flex; justify-content:center; gap:16px; margin-bottom:20px;">
+        <div style="width:70px; height:70px;">
+        
+        </div>
+      </div>
+      <h2 style="margin:20px 0;">NEE PODI PATTI THENDI NARRI CHETHE. NINAKKU VERE ORU PATTINEM KITTULLA :(</h2>
+      <div class="flex-row" style="gap:20px; justify-content:center;">
+        <button id="restartFromNotBtn" class="btn btn-primary">Restart</button>
+        <button id="exitNotBtn" class="btn btn-secondary">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ---------- DEFAULT VALUES WITH URL PARAM SUPPORT ----------
+      const urlParams = new URLSearchParams(window.location.search);
+      const TO = urlParams.get('to') || 'Ponnu Kutty';
+      const PETNAME = urlParams.get('petname') || 'Bubu';
+      const FROM_PETNAME = urlParams.get('fromPetname') || 'Dudu';
+
+      // ---------- EDITABLE STORY CARDS ----------
+      // Change these texts to customize your story
+      const STORY_CARDS = [
+        { 
+          icon: '🏡', 
+          title: 'My dear Thelungathi...', 
+          text: `You know ur kinda cute?` 
+        },
+        { 
+          icon: '😭💘', 
+          title: 'Small confession', 
+          text: `You know I actually love you very much, ${PETNAME} 😭💘` 
+        },
+        { 
+          icon: '🧸✨', 
+          title: 'Okay… big question', 
+          text: `${FROM_PETNAME} has something important to ask you 🧸✨` 
+        }
+      ];
+
+      // ---------- GLOBAL STATE ----------
+      let currentScreen = 1;
+      let currentStoryIndex = 0;
+      let dodgeCount = 0;        // max 2 dodges
+      let dodgeActive = true;    // becomes false after 2 attempts
+      let musicOn = false;
+      let audio = null;
+
+      // ---------- DOM ELEMENTS ----------
+      const screens = {
+        1: document.getElementById('screen1'),
+        2: document.getElementById('screen2'),
+        3: document.getElementById('screen3'),
+        4: document.getElementById('screen4'),
+        not: document.getElementById('screenNotThisTime')
+      };
+
+      const storyContainer = document.getElementById('storyCardContainer');
+      const prevBtn = document.getElementById('prevStory');
+      const nextBtn = document.getElementById('nextStory');
+      const surpriseBtn = document.getElementById('surpriseBtn');
+      const yesBtn = document.getElementById('yesBtn');
+      const maybeBtn = document.getElementById('maybeBtn');
+      const notBtn = document.getElementById('notThisTimeBtn');
+      const speechArea = document.getElementById('speechBubbleArea');
+      const musicToggle = document.getElementById('musicToggle');
+      const musicState = document.getElementById('musicState');
+      const restartNotBtn = document.getElementById('restartFromNotBtn');
+      const exitNotBtn = document.getElementById('exitNotBtn');
+      const restartYesBtn = document.getElementById('restartFromYesBtn');
+
+      // ---------- HELPER FUNCTIONS ----------
+      function showScreen(id) {
+        Object.values(screens).forEach(s => s.classList.add('hidden'));
+        if (id === 'not') screens.not.classList.remove('hidden');
+        else screens[id].classList.remove('hidden');
+        currentScreen = id;
+      }
+
+      // personalisation replace text
+      function personalizeStrings() {
+        document.querySelectorAll('h1, h2, h3, p, span, button').forEach(el => {
+          if (el.children.length === 0) {
+            let html = el.innerHTML;
+            html = html.replace(/Ponnu Kutty/g, TO);
+            html = html.replace(/Bubu/g, PETNAME);
+            html = html.replace(/Dudu/g, FROM_PETNAME);
+            el.innerHTML = html;
+          }
+        });
+        document.getElementById('questionTitle').innerHTML = `${PETNAME}… will you be my Valentine? 💘`;
+        
+        // Update the caption with personalized name
+        const caption = document.querySelector('.photo-caption');
+        if (caption) {
+          caption.innerHTML = `<span class="heart-decoration">💖</span> YAYY I LOVE YOU TOO MY ${PETNAME.toUpperCase()}LINA <span class="heart-decoration">💖</span>`;
+        }
+      }
+
+      // render story cards
+      function renderStoryCard(index) {
+        const card = STORY_CARDS[index];
+        storyContainer.innerHTML = `
+          <div class="story-card">
+            <div class="icon-placeholder">${card.icon}</div>
+            <h3 style="margin-bottom:8px;">${card.title}</h3>
+            <p style="font-size:1.3rem; line-height:1.4;">${card.text}</p>
+          </div>
+        `;
+        prevBtn.disabled = (index === 0);
+        nextBtn.innerText = (index === STORY_CARDS.length - 1) ? 'Dudu asks you... 💌' : 'Next 💕';
+      }
+
+      // reset to screen1
+      function fullReset() {
+        currentStoryIndex = 0;
+        dodgeCount = 0;
+        dodgeActive = true;
+        notBtn.classList.add('dodging');
+        notBtn.style.position = '';
+        notBtn.style.left = '';
+        notBtn.style.top = '';
+        showScreen(1);
+        renderStoryCard(0);
+        speechArea.innerHTML = '';
+        notBtn.innerText = 'Not this time';
+      }
+
+      // confetti hearts - enhanced for celebration
+      function popConfetti() {
+        // First burst
+        confetti({ 
+          particleCount: 120, 
+          spread: 100, 
+          origin: { y: 0.6 }, 
+          colors: ['#ffa5b0', '#ffc2d1', '#ffe0a5', '#d9c3ff', '#ffb7c5', '#ff9ebb'] 
+        });
+        
+        // Side bursts
+        setTimeout(() => confetti({ 
+          particleCount: 60, 
+          spread: 50, 
+          origin: { y: 0.5, x: 0.2 },
+          colors: ['#ffccd9', '#ffe4e1', '#fff0d4'] 
+        }), 150);
+        
+        setTimeout(() => confetti({ 
+          particleCount: 60, 
+          spread: 50, 
+          origin: { y: 0.5, x: 0.8 },
+          colors: ['#e0d4ff', '#c1e1c1', '#ffe5b4'] 
+        }), 300);
+        
+        // Heart-shaped confetti (approximated with colors)
+        setTimeout(() => {
+          for (let i = 0; i < 3; i++) {
+            confetti({
+              particleCount: 30,
+              spread: 45,
+              origin: { y: 0.5, x: 0.5 },
+              colors: ['#ff69b4', '#ffb6c1', '#ff1493']
+            });
+          }
+        }, 450);
+      }
+
+      // floating background hearts (lightweight)
+      function initBg() {
+        const heartBg = document.getElementById('heartBg');
+        for (let i=0;i<16;i++) {
+          let heart = document.createElement('div');
+          heart.className = 'heart';
+          heart.style.left = Math.random() * 100 + '%';
+          heart.style.animationDelay = Math.random() * 12 + 's';
+          heart.style.fontSize = (16 + Math.random() * 24) + 'px';
+          heart.innerText = ['❤️','🧡','💛','💚','💙','💜','🩷','💖','💗'][Math.floor(Math.random()*9)];
+          heartBg.appendChild(heart);
+        }
+        const sparkleBg = document.getElementById('sparkleBg');
+        for (let i=0;i<12;i++) {
+          let s = document.createElement('div');
+          s.className = 'sparkle';
+          s.style.left = Math.random() * 100 + '%';
+          s.style.animationDelay = Math.random() * 8 + 's';
+          s.style.fontSize = (14 + Math.random() * 18) + 'px';
+          s.innerText = '✨';
+          sparkleBg.appendChild(s);
+        }
+      }
+
+      // ---------- EVENT LISTENERS ----------
+      surpriseBtn.addEventListener('click', () => {
+        showScreen(2);
+        renderStoryCard(0);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentStoryIndex < STORY_CARDS.length - 1) {
+          currentStoryIndex++;
+          renderStoryCard(currentStoryIndex);
+        } else {
+          // go to question screen
+          showScreen(3);
+          speechArea.innerHTML = '';
+          dodgeCount = 0;
+          dodgeActive = true;
+          notBtn.classList.add('dodging');
+          notBtn.style.position = '';
+          notBtn.style.left = '';
+          notBtn.style.top = '';
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        if (currentStoryIndex > 0) {
+          currentStoryIndex--;
+          renderStoryCard(currentStoryIndex);
+        }
+      });
+
+      // ----- DODGE LOGIC (max 2) -----
+      function dodgeMove() {
+        if (!dodgeActive) return;
+        const container = document.getElementById('notThisTimeContainer');
+        const btn = notBtn;
+        const containerRect = container.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        const maxX = Math.max(0, containerRect.width - btnRect.width - 10);
+        const maxY = Math.max(0, containerRect.height - btnRect.height - 10);
+        let newX = Math.min(maxX, Math.max(0, Math.random() * maxX));
+        let newY = Math.min(maxY, Math.max(0, Math.random() * maxY));
+        btn.style.position = 'relative';
+        btn.style.left = newX + 'px';
+        btn.style.top = newY + 'px';
+      }
+
+      notBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!dodgeActive) {
+          // final click: go to "Not this time" screen
+          showScreen('not');
+          return;
+        }
+        // dodge: first or second attempt
+        dodgeCount++;
+        if (dodgeCount === 1) {
+          dodgeMove();
+          speechArea.innerHTML = '<div class="speech-bubble">Eyy Bubu 🥺 just think once</div>';
+        } else if (dodgeCount === 2) {
+          // second attempt: stop dodging, become clickable
+          dodgeActive = false;
+          notBtn.classList.remove('dodging');
+          notBtn.style.position = 'static';
+          speechArea.innerHTML = '<div class="speech-bubble">Okay okay, your choice 😌💛</div>';
+        }
+      });
+
+      // yes button - now shows photo celebration
+      yesBtn.addEventListener('click', () => {
+        popConfetti();
+        showScreen(4);
+      });
+
+      maybeBtn.addEventListener('click', () => {
+        alert('Take your time, Bubu 💛 Dudu will wait!');
+      });
+
+      // "Not this time" screen: restart or exit
+      restartNotBtn.addEventListener('click', fullReset);
+      exitNotBtn.addEventListener('click', fullReset);
+      restartYesBtn.addEventListener('click', fullReset);
+
+      // music toggle
+      musicToggle.addEventListener('click', () => {
+        musicOn = !musicOn;
+        musicState.innerText = musicOn ? 'On' : 'Off';
+        if (musicOn) {
+          if (!audio) {
+            audio = new Audio('/assets/music.mp3'); // placeholder – replace with your music file
+            audio.loop = true;
+            audio.volume = 0.5;
+          }
+          audio.play().catch(() => {
+            alert('Add your music file at /assets/music.mp3 🎵');
+          });
+        } else {
+          if (audio) {
+            audio.pause();
+          }
+        }
+      });
+
+      // ---------- INITIALIZATION ----------
+      window.onload = function() {
+        personalizeStrings();
+        initBg();
+        renderStoryCard(0);
+        showScreen(1);
+      };
+    })();
+  </script>
+
+  <!-- tiny extra style for button state -->
+  <style>
+    #notThisTimeBtn { 
+      transition: left 0.18s ease, top 0.18s ease; 
+    }
+    .btn:disabled { 
+      opacity: 0.6; 
+      transform: none; 
+      box-shadow: 0 4px 0 #e6cfb5; 
+    }
+    .character-circle {
+      box-shadow: 0 8px 0 rgba(0,0,0,0.03), 0 6px 12px rgba(255,150,180,0.2);
+      transition: transform 0.2s ease;
+    }
+    .character-circle:hover {
+      transform: scale(1.05);
+    }
+    .photo-frame {
+      animation: floatIn 0.6s ease;
+    }
+    @keyframes floatIn {
+      0% { transform: translateY(20px) rotate(0deg); opacity: 0; }
+      100% { transform: translateY(0) rotate(1deg); opacity: 1; }
+    }
+  </style>
+</body>
+</html>
